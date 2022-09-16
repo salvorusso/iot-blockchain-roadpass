@@ -15,8 +15,6 @@ contract RoadPassChain {
 
 }
 
-
-
 /** 
  * @title RoadTicket
  * @dev NFT Ticket
