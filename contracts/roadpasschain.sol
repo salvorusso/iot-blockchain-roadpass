@@ -5,36 +5,30 @@ pragma solidity ^0.8.0;
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
-import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 /** 
  * @title RoadPassChain
  * @dev Implements payment process of tolls and parking in smart cities
  */
-contract RoadPassChain {
-
-}
-
-/** 
- * @title RoadTicket
- * @dev NFT Ticket
- */
-contract RoadTicket is ERC721URIStorage, Ownable {
+contract RoadPassChain is ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
 
     constructor() ERC721("RoadTicket", "NFT") {}
 
-    function mintNFT(address recipient, string memory tokenURI)
-        public onlyOwner
-        returns (uint256)
+    function entrance(address customer) public onlyOwner returns (uint256)
     {
         _tokenIds.increment();
 
-        uint256 newItemId = _tokenIds.current();
-        _mint(recipient, newItemId);
-        _setTokenURI(newItemId, tokenURI);
+        uint256 ticketId = _tokenIds.current();
+        _mint(customer, ticketId);
 
-        return newItemId;
+        return ticketId;
+    }
+
+    function exit(uint256 ticketId) public onlyOwner
+    {
+        burn(ticketId);
     }
 }
