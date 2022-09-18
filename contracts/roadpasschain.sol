@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+import "hardhat/console.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -14,7 +15,7 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 contract RoadPassChain is ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
-    address payable wallet;
+    address payable public wallet;
 
     constructor(address payable _wallet) ERC721("RoadTicket", "NFT") {
         wallet = _wallet;
@@ -32,6 +33,7 @@ contract RoadPassChain is ERC721Burnable, Ownable {
 
     function exit(uint256 ticketId) public payable
     {
+        console.log("VALUE: ", msg.value);
         //Calcola costo
         require(msg.value >= 10, "Not enough ETH sent; check price!");
         wallet.transfer(msg.value); 
