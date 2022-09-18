@@ -27,8 +27,9 @@ contract RoadPassChain is ERC721Burnable, Ownable {
         return ticketId;
     }
 
-    function exit(uint256 ticketId) public onlyOwner
+    function exit(uint256 ticketId) public payable
     {
+        require(msg.value >= 10, "Not enough ETH sent; check price!"); 
         burn(ticketId);
     }
 }
