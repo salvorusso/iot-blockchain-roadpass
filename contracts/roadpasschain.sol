@@ -14,13 +14,16 @@ import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 contract RoadPassChain is ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
+    address payable wallet;
 
-    constructor() ERC721("RoadTicket", "NFT") {}
+    constructor(address payable _wallet) ERC721("RoadTicket", "NFT") {
+        wallet = _wallet;
+    }
 
     function entrance(address customer) public onlyOwner returns (uint256)
     {
         _tokenIds.increment();
-
+        //-_entranceGate = gate;
         uint256 ticketId = _tokenIds.current();
         _mint(customer, ticketId);
 
@@ -29,7 +32,9 @@ contract RoadPassChain is ERC721Burnable, Ownable {
 
     function exit(uint256 ticketId) public payable
     {
-        require(msg.value >= 10, "Not enough ETH sent; check price!"); 
+        //Calcola costo
+        require(msg.value >= 10, "Not enough ETH sent; check price!");
+        wallet.transfer(msg.value); 
         burn(ticketId);
     }
 }
