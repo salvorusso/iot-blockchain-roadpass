@@ -16,28 +16,35 @@ contract RoadPassChain is ERC721Burnable, Ownable {
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
     address payable public wallet;
-    string public _entranceGate;
+
+    mapping (uint256 => string) private tokenIdToLocation;
 
     constructor(address payable _wallet) ERC721("RoadTicket", "NFT") {
         wallet = _wallet;
     }
 
-    function entrance(address customer) public onlyOwner returns (uint256)
+    function entrance(address customer, string calldata gate) public onlyOwner returns (uint256)
     {
         _tokenIds.increment();
-        //-_entranceGate = gate;
         uint256 ticketId = _tokenIds.current();
         _mint(customer, ticketId);
-
+        tokenIdToLocation[ticketId] = gate;
         return ticketId;
     }
 
     function exit(uint256 ticketId, uint256 cost) public payable
     {
         console.log("VALUE: ", msg.value);
+        console.log("Entrance Gate: ", tokenIdToLocation[ticketId]);
         //Calcola costo
         require(msg.value == cost, "Not enough ETH sent; check price!");
         wallet.transfer(msg.value); 
         burn(ticketId);
+    }
+
+    //this function gets a value from the map
+    //If a value was not set the function will return the default value of 0.
+    function get(uint256 ticketId) public view returns (string memory) {
+        return tokenIdToLocation[ticketId];
     }
 }
