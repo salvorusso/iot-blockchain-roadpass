@@ -32,12 +32,12 @@ contract RoadPassChain is ERC721Burnable, Ownable {
         return ticketId;
     }
 
-    function exit(uint256 ticketId, string calldata signedLocation) public payable
+    function exit(uint256 ticketId, string calldata password) public payable
     {
         console.log("VALUE: ", msg.value);
         console.log("Entrance Gate: ", getLocation(ticketId));
         //Calcola costo
-        uint256 cost = calculateCost(getLocation(ticketId), signedLocation);
+        uint256 cost = calculateCost(getLocation(ticketId), password);
         require(msg.value == cost, "Not enough ETH sent; check price!");
         wallet.transfer(msg.value); 
         burn(ticketId);
@@ -49,7 +49,7 @@ contract RoadPassChain is ERC721Burnable, Ownable {
         return tokenIdToLocation[ticketId];
     }
 
-    function calculateCost(string memory entrance, string memory signedExit) private returns (uint256 cost) {
+    function calculateCost(string memory entrance, string memory password) private returns (uint256 cost) {
         return 1;
     }
 }
