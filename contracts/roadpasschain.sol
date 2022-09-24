@@ -9,14 +9,24 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Burnable.sol";
 
 contract RoadPassChain {
-    mapping(address => string) _totems;
 
-    function registerTotem(address totem, string memory location) public {
-        _totems[totem] = location;
+    struct Totem {
+        string location;
+        uint16 km;
     }
 
-    function getLocation(address gate) public view returns (string memory) {
+    mapping(address => Totem) _totems;
+
+    function registerTotem(address totem, string memory location, uint16 km) public {
+        _totems[totem] = Totem(location, km);
+    }
+
+    function getLocation(address gate) public view returns (Totem memory) {
         return _totems[gate];
+    }
+
+    function unitaryPrice() public pure returns (uint256) {
+        return 748096311755090 wei; // ~ 1 $ * 10Km
     }
 }
 
@@ -28,15 +38,13 @@ contract RoadPassTotem is RoadPassChain {
     address payable public _wallet; //Wallet of the motorway company
     RoadPassChain _company;
     RoadPassTicket _ticket; //Contract of NFTs
-    uint256 _price;
 
-    constructor(address payable wallet, string memory location, uint256 price, address ticket, address company) {
+    constructor(address payable wallet, string memory location, uint16 km, address ticket, address company) {
         _wallet = wallet;
         _company = RoadPassChain(company);
-        _price = price;
         _ticket = RoadPassTicket(ticket);
         //Register the totem
-        _company.registerTotem(address(this), location);
+        _company.registerTotem(address(this), location, km);
     }
 
     function entrance(address to) public returns (uint256) {
@@ -45,15 +53,18 @@ contract RoadPassTotem is RoadPassChain {
 
     function exit(uint256 ticketId) external payable {
         uint256 cost = calculateCost(_ticket.entranceGate(ticketId));
-        console.log("Sended ETH: ", msg.value);
+        console.log("Sent ETH: ", msg.value);
         console.log("Cost: ", cost);
-        require(msg.value == cost, "Wrong ETH amount for trx");
+        require(msg.value == cost, "Wrong ETH amount for trx!");
         _ticket.burnTicket(address(this), ticketId);
         _wallet.transfer(msg.value);
     }
 
-    function calculateCost(address entranceGate) public returns (uint256){
-        return 1;
+    function calculateCost(address entranceGate) public view returns (uint256){
+        Totem memory entranceTotem = _company.getLocation(entranceGate);
+        Totem memory exitTotem = _company.getLocation(address(this));
+        uint16 km = exitTotem.km - entranceTotem.km;
+        return km * _company.unitaryPrice();
     }
 
 }
@@ -78,7 +89,7 @@ contract RoadPassTicket is ERC721Burnable, Ownable, RoadPassChain {
 
     function createTicket(address gate, address to) public returns (uint256) {   
         console.log("Creating a new ticket...");
-        string memory location = _company.getLocation(gate);
+        string memory location = _company.getLocation(gate).location;
         console.log("Creating ticket at ", location);   
         require(bytes(location).length > 0, "Totem not exists!");
         _tokenIds.increment();
