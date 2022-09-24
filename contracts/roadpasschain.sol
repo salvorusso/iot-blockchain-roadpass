@@ -63,7 +63,15 @@ contract RoadPassTotem is RoadPassChain {
     function calculateCost(address entranceGate) public view returns (uint256){
         Totem memory entranceTotem = _company.getLocation(entranceGate);
         Totem memory exitTotem = _company.getLocation(address(this));
-        uint16 km = exitTotem.km - entranceTotem.km;
+        uint16 km = 0;
+
+        if(exitTotem.km > entranceTotem.km) {
+            km = exitTotem.km - entranceTotem.km;
+        }
+        else {
+            km = entranceTotem.km - exitTotem.km;
+        }
+
         return km * _company.unitaryPrice();
     }
 
