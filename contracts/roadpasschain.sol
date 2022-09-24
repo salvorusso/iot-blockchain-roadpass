@@ -28,30 +28,28 @@ contract RoadPassTotem is RoadPassChain {
     address payable public _wallet; //Wallet of the motorway company
     RoadPassChain _company;
     RoadPassTicket _ticket; //Contract of NFTs
-    //string _location;
     uint256 _price;
 
     constructor(address payable wallet, string memory location, uint256 price, address ticket, address company) {
         _wallet = wallet;
         _company = RoadPassChain(company);
-        //_location = location;
         _price = price;
         _ticket = RoadPassTicket(ticket);
-        //Registriamo la colonnina
+        //Register the totem
         _company.registerTotem(address(this), location);
     }
 
-
     function entrance(address to) public returns (uint256) {
-        console.log("MY address: ", to);
         return _ticket.createTicket(address(this), to);
     }
 
     function exit(uint256 ticketId) external payable {
         uint256 cost = calculateCost(_ticket.entranceGate(ticketId));
-        console.log("COSTO: ", cost);
-        require(msg.value > cost, "Not enough ETH sent; check price!");
+        console.log("Sended ETH: ", msg.value);
+        console.log("Cost: ", cost);
+        require(msg.value == cost, "Wrong ETH amount for trx");
         _ticket.burnTicket(address(this), ticketId);
+        _wallet.transfer(msg.value);
     }
 
     function calculateCost(address entranceGate) public returns (uint256){
@@ -94,7 +92,12 @@ contract RoadPassTicket is ERC721Burnable, Ownable, RoadPassChain {
         console.log("Entrance Gate: ", entranceGate(ticketId));
         console.log("Exit Gate: ", gate);
         setExitGate(ticketId, gate);
-        burn(ticketId);        
+        burn(ticketId);
+    }
+
+    function burn(uint256 tokenId) public override {
+        require(_isApprovedOrOwner(tx.origin, tokenId), "ERC721: caller is not token owner nor approved");
+        _burn(tokenId);
     }
 
     function setEntranceGate(uint256 tokenId, address gate) private {
