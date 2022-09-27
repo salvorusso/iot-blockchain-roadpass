@@ -1,3 +1,4 @@
+require("dotenv").config()
 async function main() {
     const RoadPassChain = await ethers.getContractFactory("RoadPassChain")
   
@@ -7,7 +8,9 @@ async function main() {
     const mainContractAddress = mainContract.address
     console.log("RoadPassChain Contract deployed to address: ", mainContractAddress)
 
-    const companyWallet = '0x8F58fA4A09A794b2d96BC8056E3958cf930EAa7d'
+    // const companyWallet = '0x8F58fA4A09A794b2d96BC8056E3958cf930EAa7d'
+    console.log('Company wallet: ', process.env.COMPANY_WALLET)
+    const companyWallet = process.env.COMPANY_WALLET
 
     //NFT deploy
     const RoadPassTicket = await ethers.getContractFactory("RoadPassTicket")

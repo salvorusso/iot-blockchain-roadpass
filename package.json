@@ -1,21 +1,53 @@
 {
   "name": "iot-project",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "",
-  "license": "ISC",
+  "description": "BlockChain implementation of payment process of tolls and parking in smart cities.",
+  "private": true,
   "devDependencies": {
     "@nomiclabs/hardhat-ethers": "^2.1.1",
+    "@openzeppelin/contracts": "^4.7.3",
     "ethers": "^5.0.0",
     "hardhat": "^2.11.1"
   },
   "dependencies": {
     "@alch/alchemy-web3": "^1.4.6",
-    "@openzeppelin/contracts": "^4.7.3",
-    "dotenv": "^16.0.2"
+    "axios": "^0.27.2",
+    "cross-fetch": "^3.1.5",
+    "dotenv": "^16.0.2",
+    "ethers": "^5.6.6",
+    "express": "^4.18.1",
+    "fetch-ponyfill": "^7.1.0",
+    "negotiator": "^0.6.3",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
+    "react-bootstrap": "^2.5.0",
+    "react-scripts": "^4.0.3",
+    "readline": "^1.3.0",
+    "web-vitals": "^1.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/salvorusso/iot-blockchain-roadpass.git"
+  },
+  "bugs": {
+    "url": "https://github.com/salvorusso/iot-blockchain-roadpass/issues"
   }
 }
