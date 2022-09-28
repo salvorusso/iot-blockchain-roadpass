@@ -1,6 +1,8 @@
 import dotenv from 'dotenv';
 import { createAlchemyWeb3 } from "@alch/alchemy-web3";
 import axios from 'axios';
+// import "./getTransactionReceiptMined.js"
+// import "./sequentialPromise.js"
 
 import RoadPassChainContract from './artifacts/contracts/RoadPass.sol/RoadPassChain.json';
 import RoadPassTicketContract from './artifacts/contracts/RoadPass.sol/RoadPassTicket.json';
@@ -33,6 +35,7 @@ try {
 dotenv.config();
 
 const web3 = createAlchemyWeb3(API_URL);
+web3.eth.getTransactionReceiptMined = require("./getTransactionReceiptMined.js");
 
 export const connectWallet = async () => {
   if (window.ethereum) {
@@ -138,8 +141,7 @@ export const entranceCT = async (walletAddress) => {
       method: "eth_sendTransaction",
       params: [transactionParameters],
     })
-    var start = await showSpinner(20000);
-    const tokenId = await getDetails(window.ethereum.selectedAddress, txHash);
+    const tokenId = await getDetailsOK(txHash);
     return {
       success: true,
       status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash,
@@ -184,7 +186,7 @@ export const entranceTAO = async (walletAddress) => {
       method: "eth_sendTransaction",
       params: [transactionParameters],
     })
-    const tokenId = await getDetails(window.ethereum.selectedAddress, txHash);
+    const tokenId = await getDetailsOK(txHash);
     return {
       success: true,
       status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash,
@@ -229,7 +231,7 @@ export const entranceME = async (walletAddress) => {
       method: "eth_sendTransaction",
       params: [transactionParameters],
     })
-    const tokenId = await getDetails(window.ethereum.selectedAddress, txHash);
+    const tokenId = await getDetailsOK(txHash);
     return {
       success: true,
       status: "✅ Check out your transaction on Etherscan: https://goerli.etherscan.io/tx/" + txHash,
@@ -423,38 +425,72 @@ export const exitME = async (walletAddress, ticketId, entranceAddress) => {
 
 }
 
-export async function getDetails(address, txHash) {
+// export async function getDetails(address, txHash) {
+//   // await timeout(15000);
+//   // setTimeout(() => { console.log("Wait a moment please.") }, 10000);
+
+//   var start = await showSpinner(1000);
+//   if (start) {
+//     var token = await getToken(address, txHash)
+//     if (!!token) {
+//       hideSpinner()
+//       return token;
+//     }
+//     else {
+//       return getDetails(address, txHash)
+//     }
+//   }
+
+// }
+
+export async function getDetailsOK(txHash) {
   // await timeout(15000);
   // setTimeout(() => { console.log("Wait a moment please.") }, 10000);
 
   var start = await showSpinner(1000);
   if (start) {
-    var token = await getToken(address, txHash)
+    var token = await getTokenOK(txHash)
     if (!!token) {
       hideSpinner()
       return token;
     }
     else {
-      return getDetails(address, txHash)
+      return getDetailsOK(txHash)
     }
   }
 
 }
 
-async function getToken(address, txHash) {
-  const url = `https://api-goerli.etherscan.io/api?module=account&action=tokennfttx&address=${address}&startblock=0&endblock=latest&sort=asc&apikey=${ETHERSCAN_APIKEY}`
+// async function getToken(address, txHash) {
+//   const url = `https://api-goerli.etherscan.io/api?module=account&action=tokennfttx&address=${address}&startblock=0&endblock=latest&sort=asc&apikey=${ETHERSCAN_APIKEY}`
 
-  return axios.get(url)
-        .then(response => {
-          console.log(response)
-          hideSpinner()
-          const filtered = response.data.result.find(element => element.hash === txHash)
-          return filtered.tokenID
-        })
-        .catch(error => {
-          console.log(error)
-          return null
-        })
+//   return axios.get(url)
+//         .then(response => {
+//           console.log(response)
+//           hideSpinner()
+//           const filtered = response.data.result.find(element => element.hash === txHash)
+//           return filtered.tokenID
+//         })
+//         .catch(error => {
+//           console.log(error)
+//           return null
+//         })
+// }
+
+async function getTokenOK( txHash) {
+
+  return web3.eth.getTransactionReceiptMined(txHash)
+    .then(function (receipt) {
+      // now you have the mined transaction receipt as "receipt"
+      console.log(receipt);
+      hideSpinner()
+      return parseInt(receipt.logs[0].topics[3], 16);
+    })
+    .catch(error => {
+      console.log(error)
+      return null
+    })
+
 }
 
 async function showSpinner(ms) {
