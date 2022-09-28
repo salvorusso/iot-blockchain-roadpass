@@ -3,13 +3,13 @@ import { useEffect, useState } from "react";
 import {
   connectWallet,
   getCurrentWalletConnected,
-  getDetails,
   entranceCT,
   entranceTAO,
   entranceME,
   exitCT,
   exitTAO,
-  exitME
+  exitME,
+  getDetails
 } from "./interact.js";
 import ButtonGroup from 'react-bootstrap/ButtonGroup'
 import Button from 'react-bootstrap/Button'
@@ -24,10 +24,6 @@ const Minter = (props) => {
 
   const [showEntranceButtons, setShowEntranceButtons] = useState();
   const [showExitButtons, setShowExitButtons] = useState();
-
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [url, setURL] = useState("");
 
   useEffect(async () => {
     const { address, status } = await getCurrentWalletConnected();
@@ -72,7 +68,7 @@ const Minter = (props) => {
         </p>
       );
     }
-  }
+  };
 
   const connectWalletPressed = async () => {
     const walletResponse = await connectWallet();
@@ -116,7 +112,7 @@ const Minter = (props) => {
   };
 
   const exitTAOPressed = async () => {
-    const { success, status } = await exitTAO(walletAddress);
+    const { success, status } = await exitTAO(walletAddress, ticketId, entranceAddress);
     setStatus(status);
     if (success) {
       setTicketId(null);
@@ -131,20 +127,12 @@ const Minter = (props) => {
     }
   };
 
-  const testButtonPressed = async () => {
-    await getDetails(walletAddress, '0x6af783c8101aaafd3a961d0933ae6153d2c3957e9cec5606952ad18543242079');
-  };
-
-  const testExitButtonPressed = async () => {
-    const { success, status } = await exitME(walletAddress, ticketId, entranceAddress);
-    setStatus(status);
-    if (success) {
-      setTicketId(null);
-    }
-  }; 
-
-  const entranceAddressPush = async () => {
-    setEntranceAddress('0x1e589723Dc519A0E1EA4366A904e75097E10DA31');
+  const testSpinner = async () => {
+      const spinner = document.getElementById('spinner');
+      spinner.style.display = 'block';
+      setTimeout(() => {
+        spinner.style.display = 'none';
+      }, 15000);
   };
 
   return (
@@ -165,27 +153,7 @@ const Minter = (props) => {
       <p>
       With this simple dapp it is possible to simulate RoadPass features. RoadPass is an ethereum blockchain-based toll system for highways; an NFT (🎫) can be "minted" at the highway entrance and subsequently it will be "burned" at the exit, paying a price proportional to the kilometers traveled.
       </p>
-      <Image src={auto} className="m-4"></Image>
-      {/* <form>
-        <h2>🖼 Link to asset: </h2>
-        <input
-          type="text"
-          placeholder="e.g. https://gateway.pinata.cloud/ipfs/<hash>"
-          onChange={(event) => setURL(event.target.value)}
-        />
-        <h2>🤔 Name: </h2>
-        <input
-          type="text"
-          placeholder="e.g. My first NFT!"
-          onChange={(event) => setName(event.target.value)}
-        />
-        <h2>✍️ Description: </h2>
-        <input
-          type="text"
-          placeholder="e.g. Even cooler than cryptokitties ;)"
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </form> */}
+      <Image src={auto} className="m-4 mx-auto"></Image>
       <br></br>
       
       <p>
@@ -201,9 +169,6 @@ const Minter = (props) => {
         <Button className="entranceButton me-2" onClick={entranceCTPressed}>Entrance (Catania)</Button>
         <Button className="entranceButton me-2" onClick={entranceTAOPressed}>Entrance (Taormina)</Button>
         <Button className="entranceButton me-2" onClick={entranceMEPressed}>Entrance (Messina)</Button>
-        {/* <Button className="entranceButton me-2" onClick={testButtonPressed}>TEST ETHERSCAN API</Button>
-        <Button className="entranceButton me-2" onClick={testExitButtonPressed}>TEST EXIT</Button>
-        <Button className="entranceButton me-2" onClick={entranceAddressPush}>TEST ENTRANCE</Button> */}
       </ButtonGroup>
       <br></br>
       <ButtonGroup id="exit-buttons" className={showExitButtons ? 'mt-1' : 'd-none'}>
@@ -212,16 +177,14 @@ const Minter = (props) => {
         <Button className="exitButton" onClick={exitMEPressed}>Exit (Messina)</Button>
       </ButtonGroup>
       
-      {/* <button id="mintButton" onClick={entranceCTPressed}>
-        Entrance (Catania)
-      </button>
-      <button id="mintButton" onClick={exitTAOPressed}>
-        Burn NFT
-      </button> */}
-
       <p id="status" style={{ color: "red" }}>
         {status}
       </p>
+
+      <div id="spinner">
+        <div className="loader"></div>
+      </div>
+
     </div>
     
   );
