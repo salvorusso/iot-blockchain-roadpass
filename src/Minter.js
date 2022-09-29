@@ -16,6 +16,7 @@ import Image from 'react-bootstrap/Image'
 import auto from "./resources/car.gif"
 
 const Minter = (props) => {
+  document.title = "IOTBSS - RoadPass Simulator";
   const [walletAddress, setWallet] = useState("");
   const [status, setStatus] = useState("");
   const [ticketId, setTicketId] = useState(null);
@@ -76,29 +77,47 @@ const Minter = (props) => {
   };
 
   const entranceCTPressed = async () => {
-    const { success, status, entranceAddress, tokenID } = await entranceCT(walletAddress);
-    setStatus(status);
-    if (success) {
-      setEntranceAddress(entranceAddress);
-      setTicketId(tokenID);
+    const { address, status } = await getCurrentWalletConnected();
+    if (!!address) {
+      const { success, status, entranceAddress, tokenID } = await entranceCT(walletAddress);
+      setStatus(status);
+      if (success) {
+        setEntranceAddress(entranceAddress);
+        setTicketId(tokenID);
+      } 
+    }
+    else {
+      setStatus(status);
     }
   };
 
   const entranceTAOPressed = async () => {
-    const { success, status, entranceAddress, tokenID } = await entranceTAO(walletAddress);
-    setStatus(status);
-    if (success) {
-      setEntranceAddress(entranceAddress);
-      setTicketId(tokenID);
+    const { address, status } = await getCurrentWalletConnected();
+    if (!!address) {
+      const { success, status, entranceAddress, tokenID } = await entranceTAO(walletAddress);
+      setStatus(status);
+      if (success) {
+        setEntranceAddress(entranceAddress);
+        setTicketId(tokenID);
+      }
+    }
+    else {
+      setStatus(status);
     }
   };
 
   const entranceMEPressed = async () => {
-    const { success, status, entranceAddress, tokenID } = await entranceME(walletAddress);
-    setStatus(status);
-    if (success) {
-      setEntranceAddress(entranceAddress);
-      setTicketId(tokenID);
+    const { address, status } = await getCurrentWalletConnected();
+    if (!!address) {
+      const { success, status, entranceAddress, tokenID } = await entranceME(walletAddress);
+      setStatus(status);
+      if (success) {
+        setEntranceAddress(entranceAddress);
+        setTicketId(tokenID);
+      }
+    }
+    else {
+      setStatus(status);
     }
   };
 
