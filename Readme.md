@@ -1,6 +1,8 @@
 # RoadPass 🚗💰📲
 BlockChain implementation of payment process of tolls and parking in smart cities.
 
+![Alt Text](/src/resources/car.gif)
+
 ## Get started
 
 ```
