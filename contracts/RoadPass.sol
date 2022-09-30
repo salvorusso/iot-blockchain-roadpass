@@ -26,7 +26,7 @@ contract RoadPassChain {
     }
 
     function unitaryPrice() public pure returns (uint256) {
-        return 748096311755090 wei; // ~ 1 $ * 10Km
+        return 74809631175509 wei; // ~ 0,1$/1Km
     }
 }
 
